@@ -13,32 +13,33 @@ st.set_page_config(
     page_title="수퍼마켓 EDA", 
     page_icon=":bar_chart:",
     layout="wide"
-    )
+)
 
 # 제목
 st.title(" :bar_chart: 미국 수퍼마켓 데이터 EDA") 
 st.caption("[출처(https://www.youtube.com/watch?app=desktop&v=7yAw1nPareM)](https://www.youtube.com/watch?app=desktop&v=7yAw1nPareM)")
+st.write("Streamlit 버전: ", st.__version__)
 
 # 파일 업로더 설정
 file = st.file_uploader(
-    ":file_folder: 파일을 업로드 해주세요.",
-    type=(["csv","txt","xlsx","xls"])
-    )
+    "📁 파일을 업로드 해주세요.", 
+    type=(["csv"])
+)
 
 # 파일이 업로드 되었을 때 처리
 if file is not None:
     # 파일명 저장 및 결과 출력
-    filepath = os.path.join("./data", file.name)
+    filepath = os.path.join("./", file.name)
     st.write(f'{file.name} 파일이 업로드 되었습니다.')
     # 파일 저장
     with open(filepath, "wb") as f:
         f.write(file.getbuffer())
-    st.success(f'{file.name} 파일이 data 폴더에 저장되었습니다.')
+    st.success(f'{file.name} 파일이 저장되었습니다.')
     # 데이터프레임으로 변환
-    df = pd.read_csv(filepath)
+    df = pd.read_csv(filepath, encoding = "UTF-8")
 else:
     # 저장된 데이터 불러오기
-    df = pd.read_csv("./data/Superstore.csv")
+    df = pd.read_csv("Superstore.csv", encoding = "UTF-8")
 
 # 화면을 2개의 컬럼으로 나누기
 col1, col2 = st.columns((2))
@@ -59,6 +60,7 @@ with col2:
 
 # 날짜에 따라 데이터프레임 필터링
 df = df[(df["Order Date"] >= date1) & (df["Order Date"] <= date2)].copy()
+
 
 # 사이드바 설정
 st.sidebar.header("데이터 필터: ")
@@ -121,7 +123,7 @@ with col2:
 cl1, cl2 = st.columns((2))
 with cl1:
     with st.expander("카테고리별 데이터 보기"):
-        st.write(category_df.style.background_gradient(cmap="Blues"))
+        st.dataframe(category_df.style.background_gradient(cmap="Blues"))
         csv = category_df.to_csv(index = False).encode('utf-8')
         st.download_button(
             "데이터 다운로드", 
@@ -137,7 +139,7 @@ with cl2:
             by = "Region", 
             as_index = False
             )["Sales"].sum()
-        st.write(region.style.background_gradient(cmap="Oranges"))
+        st.dataframe(region.style.background_gradient(cmap="Oranges"))
         csv = region.to_csv(index = False).encode('utf-8')
         st.download_button(
             "데이터 다운로드", 
@@ -168,7 +170,7 @@ st.plotly_chart(fig2,use_container_width=True)
 
 # 데이터 보기
 with st.expander("시계열 데이터 보기:"):
-    st.write(linechart.T.style.background_gradient(cmap="Blues"))
+    st.dataframe(linechart.T.style.background_gradient(cmap="Blues"))
     csv = linechart.to_csv(index=False).encode("utf-8")
     st.download_button('Download Data', data = csv, file_name = "TimeSeries.csv", mime ='text/csv')
 
@@ -239,7 +241,7 @@ with st.expander("요약표"):
         index = ["Sub-Category"],
         columns = "month"
         )
-    st.write(sub_category_Year.style.background_gradient(cmap="Blues"))
+    st.dataframe(sub_category_Year.style.background_gradient(cmap="Blues"))
 
 # 산점도를 이용한 판매와 이익의 관계 시각화
 data1 = px.scatter(
@@ -256,7 +258,7 @@ st.plotly_chart(data1,use_container_width=True)
 
 # 데이터 보기
 with st.expander("데이터 보기"):
-    st.write(filtered_df.iloc[:500,1:20:2].style.background_gradient(cmap="Oranges"))
+    st.dataframe(filtered_df.iloc[:500,1:20:2].style.background_gradient(cmap="Oranges"))
 
 # 데이터 다운로드
 csv = df.to_csv(index = False).encode('utf-8')
