@@ -255,7 +255,7 @@ data1 = px.scatter(
     size = "Quantity"
 )
 data1['layout'].update(
-    title="Relationship between Sales and Profits using Scatter Plot.",     
+    title="산점도를 이용한 매출액과 이익간의 관계",     
     titlefont = dict(size=20),
     xaxis = dict(title="Sales",titlefont=dict(size=19)),                      
     yaxis = dict(title = "Profit", titlefont = dict(size=19))
